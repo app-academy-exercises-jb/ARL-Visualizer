@@ -1,5 +1,4 @@
-class SastMan
-  module Lexer
+module Lexer
     QUERIES = %w(select from where limit)
     MODIFIERS = %w(distinct as)
     OPERATORS = %w(on between like in and or join)
@@ -66,7 +65,6 @@ class SastMan
           # change_token.call(current_token,current_token_type)
         elsif /\s/ === chr
           # we finished reading a token, unless we're in the middle of a value literal
-
           change_token.call(current_token, current_token_type) unless current_token_type == :value
         else
           raise "fatal. unrecognized character #{chr}"
@@ -91,28 +89,4 @@ class SastMan
     end
 
     const_set :NullToken, Token.new(:null, nil)
-  end
 end
-
-__END__
-# test sql:
-SELECT users.* FROM users WHERE lname = 'Miller'
-SELECT users.* FROM users WHERE id = (SELECT id FROM users WHERE fname = 'Jorge')
-
-
-"SELECT users.*,questions.* FROM users JOIN questions ON questions.author_id = users.id WHERE lname = 'Miller' AND fname IN (SELECT users.fname FROM users WHERE id > 3)"
-# list of tokens we will find:
-SELECT
-FROM
-JOIN
-WHERE
-AND
-ON
-names
-=
-(
-)
-*
-'
-,
-.

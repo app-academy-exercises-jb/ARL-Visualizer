@@ -1,16 +1,16 @@
-require 'byebug'
-require 'singleton'
-require 'sqlite3'
-require 'active_support/inflector'
+# require 'byebug'
+# require 'singleton'
+# require 'sqlite3'
+# require 'active_support/inflector'
 
-require_relative 'base_object'
-require_relative 'base_table'
-require_relative "base_relation"
+# require_relative 'base_object'
+# require_relative 'base_table'
+# require_relative "base_relation"
 require_relative 'Modules/associatable'
 require_relative 'Modules/validator'
 require_relative 'Modules/equalizer'
 require_relative 'Modules/searchable'
-require_relative "sastman/sql_ast"
+# require_relative "SastMan/SastMan"
 
 module BaseConnection
   class << self
@@ -46,7 +46,7 @@ module BaseConnection
     end
 
     def generate_classes!(db, tables)
-      classes = []
+      @classes = []
 
       tables.each { |table_name|
         next if /^sqlite_/.match?(table_name)
@@ -61,20 +61,20 @@ module BaseConnection
           def self.table; @table; end
           attr_reader :db, :table
 
-          extend Associatable
-          extend Validator
-          extend Searchable
-          include Equalizer
+          extend Modules::Associatable
+          extend Modules::Validator
+          extend Modules::Searchable
+          include Modules::Equalizer
         })
 
-        classes << klass
+        @classes << klass
       }
 
       @db = nil
-      classes
+      @classes
     end
   end
 end
 
-BaseConnection.connect('app/BaseConnection/questions.db') if BaseConnection.loaded == true
+BaseConnection.connect('app/BaseConnection/questions.db') if BaseConnection.loaded == false
 BaseConnection.loaded = true

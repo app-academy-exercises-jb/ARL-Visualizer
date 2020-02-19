@@ -1,4 +1,4 @@
-module Validator
+module Modules::Validator
   def opt_parser(opt_hash)
     opt_hash.map { |k,v|
       [k.to_sym, v]

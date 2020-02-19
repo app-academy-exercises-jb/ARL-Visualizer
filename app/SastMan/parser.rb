@@ -24,9 +24,8 @@
 # the entire parser can be rewritten in TDOP style w/ careful control of the precedence vals
 # 
 
-require "byebug"
-class SastMan
-  module Parser
+# require "byebug"
+module Parser
     PRECEDENCE = {
       nil => -1,
       "join" => 0, 
@@ -130,10 +129,13 @@ class SastMan
             node_tokens << current_token
             counter.call
           end
-
+          
           # we've detected a subquery
           if node_tokens[-1].value == "("
-            until current_token.value == ")"
+            depth = 1
+            until current_token.value == ")" && depth == 1
+              # depth += 1 if current_token.value == "("
+              # depth -= 1 if current_token.value == ")"
               node_tokens << current_token
               counter.call
             end
@@ -143,7 +145,7 @@ class SastMan
             raise SyntaxError.new("subquery must be named") if node_tokens[-1].nil?
           end
           
-          
+          # debugger
           case type
           when :select
             # we've got a SELECT, which may have a DISTINCT, options, and several selected values
@@ -184,6 +186,7 @@ class SastMan
           subquery_tokens = [current_token]
           options = {}
 
+          debugger
           until current_token.type == :paren && current_token.value == ")"
             counter.call
             subquery_tokens << current_token
@@ -195,7 +198,8 @@ class SastMan
           end        
 
           value = self.generate_tree(subquery_tokens[1..-2])
-          SastNode.new(type: type, value: value, options: options)
+          
+          SastNode.new(type: :query, value: value, options: options)
         when :word, :value
           if tokens[count+1]&.type == :operator
             
@@ -223,5 +227,4 @@ class SastMan
       return if tokens.empty?
       walk.call
     end
-  end
 end

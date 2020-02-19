@@ -1,4 +1,4 @@
-module Associatable
+module Modules::Associatable
   def self.extended(child) 
     child.instance_variable_set(:@associations, Hash.new)
     child.singleton_class.class_exec() { define_method :associations do; @associations; end }

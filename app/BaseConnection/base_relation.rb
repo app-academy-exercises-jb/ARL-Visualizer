@@ -11,7 +11,7 @@ class BaseRelation
   attr_reader :loaded, :klass, :values, :table
 
   include Enumerable
-  include Searchable
+  include Modules::Searchable
 
   def initialize(klass, table: klass.table, db: klass.db, query: nil, values: [])
     @klass = klass

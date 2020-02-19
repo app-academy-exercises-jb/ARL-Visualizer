@@ -1,4 +1,4 @@
-module Searchable
+module Modules::Searchable
   def self.extended(child)
     db = child.db
     table_name = child.table.name

@@ -1,25 +1,10 @@
-require_relative "lexer"
-require_relative "parser"
-require_relative 'sql_ast_node'
+# require_relative "lexer"
+# require_relative "parser"
+# require_relative 'sast_node'
 
-
+# debugger
 class SastMan
-  module Traverser
-    def traverse(root)
-      puts root.to_sql
-      root.options&.each { |(key, opt)|
-        # p "key: " + key.to_s
-        # p "opt: " + opt.to_s
-        opt.is_a?(Array) ?
-          opt.each { |o| traverse(o) } :
-          traverse(opt)
-      }
-    end
-  end 
-end
-
-class SastMan
-  extend Traverser
+  # extend Traverser
   extend Parser
   extend Lexer
 
@@ -95,3 +80,16 @@ class SastMan
 
   
 end
+
+# module SastMan::Traverser
+#   def traverse(root)
+#     puts root.to_sql
+#     root.options&.each { |(key, opt)|
+#       # p "key: " + key.to_s
+#       # p "opt: " + opt.to_s
+#       opt.is_a?(Array) ?
+#         opt.each { |o| traverse(o) } :
+#         traverse(opt)
+#     }
+#   end
+# end
