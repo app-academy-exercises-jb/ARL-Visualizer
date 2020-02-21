@@ -1,6 +1,6 @@
 import React from "react"
 import styled, { ThemeProvider } from 'styled-components'
-import Line from "./Line"
+import Line from "./line/line"
 
 const Body = styled.div`
   margin: 0px;
@@ -21,26 +21,36 @@ class Terminal extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.getLines = this.getLines.bind(this);
     this.switchLine = this.switchLine.bind(this);
+    this.clearLines = this.clearLines.bind(this);
     this.newLine = this.newLine.bind(this);
     this.history = this.history.bind(this);
+    this.newHistory = this.newHistory.bind(this);
 
-    const line = this.newLine();
+    const line = this.newLine(0);
     this.state = {
       lines: [line],
       currentLine: line,
+      lineIdx: 0,
       history: [],
       historyIdx: -1,
       currentInput: ""
     };
   }
 
-  newLine() {
+  newLine(key) {
     return (<Line 
       ref={(ch) => this.prompt = ch}
       current={true} 
       switchLine={this.switchLine}
+      clearLines={this.clearLines}
       history={this.history}
-      />)
+      key={key}
+    />)
+  }
+
+  componentDidMount() {
+    //simulate "help"
+    this.prompt.keyDownHandler({keyCode: 13, target: {value: "help"}})
   }
 
   history(dir, value) {
@@ -58,6 +68,7 @@ class Terminal extends React.Component {
           newIdx);
     }
 
+    //only reset currentInput coming out of the current input
     this.setState({historyIdx: newIdx});
     if (this.state.historyIdx < newIdx && newIdx === 0) {
       this.setState({currentInput: value});
@@ -70,27 +81,37 @@ class Terminal extends React.Component {
     }
   }
 
+  newHistory(input) {
+    return input === this.state.history[0]
+      ? this.state.history
+      : [input, ...this.state.history];
+  }
+
   switchLine(input) {
-    let newLines = [...this.state.lines, this.newLine()],
-      newHistory = input === this.state.history[0] ? 
-        this.state.history :
-        [input, ...this.state.history];
+    const history = this.newHistory(input),
+      lineIdx = this.state.lineIdx + 1,
+      lines = [...this.state.lines, this.newLine(lineIdx)];
   
-    
     this.setState({
-      lines: newLines,
-      currentLine: newLines[newLines.length - 1],
-      history: newHistory,
-      historyIdx: -1
+      lines,
+      currentLine: lines[lines.length - 1],
+      history,
+      historyIdx: -1,
+      lineIdx
     });
   }
 
-  componentDidMount() {
-    this.prompt.inputRef.focus();
-  }
-
-  componentDidUpdate() {
-    this.prompt.inputRef.focus();
+  clearLines() {
+    const lineIdx = this.state.lineIdx + 1,
+      line = this.newLine(lineIdx),
+      lines = [line];
+    
+    this.setState({
+      lines,
+      currentLine: line,
+      historyIdx: -1,
+      lineIdx
+    });
   }
 
   handleClick() {
@@ -98,10 +119,11 @@ class Terminal extends React.Component {
   }
 
   getLines() {
+    // debugger
     return (
       <div>
-        {this.state.lines.map((l,i) => { return (
-          <div key={i}>
+        {this.state.lines.map((l) => { return (
+          <div key={l.key}>
             <br></br>
             <div>{l}</div>
             <br></br>

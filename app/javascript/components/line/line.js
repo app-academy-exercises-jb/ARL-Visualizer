@@ -1,6 +1,7 @@
 import React from "react"
 import styled, { ThemeProvider } from 'styled-components'
-import Parser from './Parser'
+import Parser from '../parser'
+import * as Commands from "./commands"
 
 
 const Prompt = styled.input`
@@ -30,6 +31,10 @@ class Line extends React.Component {
     this.getIO = this.getIO.bind(this);
   }
 
+  componentDidMount() {
+    this.inputRef.focus();
+  }
+
   keyDownHandler(event) {
     if (event.key === "ArrowUp") {
       event.preventDefault();
@@ -51,7 +56,7 @@ class Line extends React.Component {
 
   getOutput() {
     async function getData(url='',data={}) {
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method: 'POST',
         mode: "cors",
         cache: "no-cache",
@@ -59,17 +64,31 @@ class Line extends React.Component {
         redirect: "manual",
         body: JSON.stringify(data)
       });
-      return await response.json();
+      return await res.json();
     }
 
     const req = this.parse()
 
-    getData(location.origin + "/api/v1/command", req)
-      .then(res => {
-        this.setState({ response: JSON.stringify(res) })
-      }).catch(err => {
-        this.setState({ response: JSON.stringify(err.toString()) })
-      });
+    if (typeof req === "object") {
+      Commands[req.command](req.input)
+        .then(response => {
+          if (typeof response === "function") {
+            response.apply(this);
+          } else if (typeof response === "object") {
+            this.setState({ response })
+          }
+
+        }).catch(err => {
+          this.setState({ response: JSON.stringify(err.toString()) })
+        })
+    } else if (typeof req === "string") {
+      getData(location.origin + "/api/v1/command", {command: {input: req}})
+        .then(res => {
+          this.setState({ response: JSON.stringify(res) })
+        }).catch(err => {
+          this.setState({ response: JSON.stringify(err.toString()) })
+        });
+    }
   }
 
   getIO() {
