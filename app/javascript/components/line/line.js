@@ -96,7 +96,7 @@ class Line extends React.Component {
 
     return (
       <div>
-        {this.input}
+        [{this.props.ip}]$ {this.input}
         <br></br>
         {this.state.response}
       </div>
@@ -105,7 +105,7 @@ class Line extends React.Component {
 
   showPrompt() {
     return (<div>
-      $<Prompt 
+      [{this.props.ip}]$<Prompt 
         ref={(ip) => this.inputRef = ip}
         onKeyDown={this.keyDownHandler}
       >

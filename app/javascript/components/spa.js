@@ -45,6 +45,7 @@ class Terminal extends React.Component {
       clearLines={this.clearLines}
       history={this.history}
       key={key}
+      ip={this.props.ip}
     />)
   }
 
