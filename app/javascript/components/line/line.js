@@ -1,14 +1,19 @@
 import React from "react"
 import styled, { ThemeProvider } from 'styled-components'
-import Parser from '../parser'
+import Parser from './parser'
 import * as Commands from "./commands"
+import { getData } from "../../utils/utils"
 
+
+const Resp = styled.div`
+  white-space: pre;
+`;
 
 const Prompt = styled.input`
   font: inherit;
   font-size: 1em;
   &, &:focus {
-    width: 90%;
+    width: fit-content;
     border: none;
     padding: 0;
     outline: none;
@@ -55,18 +60,6 @@ class Line extends React.Component {
   }
 
   getOutput() {
-    async function getData(url='',data={}) {
-      const res = await fetch(url, {
-        method: 'POST',
-        mode: "cors",
-        cache: "no-cache",
-        headers: { "Content-Type": "application/json" },
-        redirect: "manual",
-        body: JSON.stringify(data)
-      });
-      return await res.json();
-    }
-
     const req = this.parse()
 
     if (typeof req === "object") {
@@ -77,17 +70,11 @@ class Line extends React.Component {
           } else if (typeof response === "object") {
             this.setState({ response })
           }
-
         }).catch(err => {
           this.setState({ response: JSON.stringify(err.toString()) })
         })
     } else if (typeof req === "string") {
-      getData(location.origin + "/api/v1/command", {command: {input: req}})
-        .then(res => {
-          this.setState({ response: JSON.stringify(res) })
-        }).catch(err => {
-          this.setState({ response: JSON.stringify(err.toString()) })
-        });
+      Commands["Query"]().then(response => response.apply(this, [req]))
     }
   }
 
@@ -98,14 +85,16 @@ class Line extends React.Component {
       <div>
         [{this.props.ip}]$ {this.input}
         <br></br>
-        {this.state.response}
+        <Resp>
+          {this.state.response}
+        </Resp>
       </div>
     )
   }
 
   showPrompt() {
     return (<div>
-      [{this.props.ip}]$<Prompt 
+      [{this.props.ip}]$ <Prompt 
         ref={(ip) => this.inputRef = ip}
         onKeyDown={this.keyDownHandler}
       >

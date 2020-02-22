@@ -3,6 +3,8 @@ import styled, { ThemeProvider } from 'styled-components'
 import Line from "./line/line"
 
 const Body = styled.div`
+  z-index: 0;
+  position: absolute;
   margin: 0px;
   height: 100%;
   width: 100%;
@@ -46,6 +48,7 @@ class Terminal extends React.Component {
       history={this.history}
       key={key}
       ip={this.props.ip}
+      classes={this.props.classes}
     />)
   }
 

@@ -1,5 +1,5 @@
 function checkCommands(input) {
-  const commands = ["echo","help","clear","pwd","man"],
+  const commands = ["echo","help","clear","pwd","generate"],
     match = commands.filter(c => (c === input.split(" ")[0]));
 
   if (match.length === 1) {
