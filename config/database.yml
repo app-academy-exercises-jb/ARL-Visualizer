@@ -81,3 +81,4 @@ test:
 production:
   <<: *default
   database: react_rails_development
+  url: <%= ENV['DATABASE_URL'] %>
