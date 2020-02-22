@@ -21,7 +21,7 @@ class Nodes::QueryNode < SastNode
     "#{@type.upcase} #{value} #{options&.map(&:to_sql)&.join(" ")}".chomp(" ")
   end
 
-  def add_value(value)
+  def add_value(val)
     case type
     when :select
       @value << value
@@ -29,6 +29,8 @@ class Nodes::QueryNode < SastNode
       @value[-1].is_a?(Array) ? 
         @value.insert(-2, value) :
         @value << value
+    when :where
+      @value = SastNode.new(type: :operator, value: [@value, val], options: {operator: "and"})
     else 
       raise NotImplementedError.new
     end
