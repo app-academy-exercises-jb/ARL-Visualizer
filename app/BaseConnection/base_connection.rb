@@ -32,7 +32,7 @@ module BaseConnection
         include Singleton
 
         define_method :initialize do
-          @conn = PG.connect dbname: "react_rails_development"
+          @conn = PG.connect dbname: "react_rails_production"
         end
 
         define_method :execute do |input|
