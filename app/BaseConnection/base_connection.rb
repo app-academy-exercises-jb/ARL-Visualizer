@@ -33,10 +33,10 @@ module BaseConnection
       elsif ENV["RAILS_ENV"] == "production"
         db = {
           host: "ec2-3-230-106-126.compute-1.amazonaws.com",
-          port: 5432
+          port: 5432,
           dbname: "react_rails_development",
           user: ENV["DB_USER"],
-          password: ENV["DB_PASS"],
+          password: ENV["DB_PASS"]
         }
       end
 
