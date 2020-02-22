@@ -44,7 +44,6 @@ module BaseConnection
         include Singleton
 
         define_method :initialize do
-          puts "this is the url: " + ENV['DATABASE_URL']
           @conn = PG.connect db
         end
 

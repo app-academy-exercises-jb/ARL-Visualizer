@@ -4,12 +4,11 @@ import Line from "./line/line"
 
 const Body = styled.div`
   z-index: 0;
-  position: absolute;
   margin: 0px;
   height: 100%;
   width: 100%;
   min-height: 100vh;
-  max-height: auto;
+  max-height: fit-content;
   text-align: initial;
   background-color: #2c2c2c;
   color: #c8c8c8;
