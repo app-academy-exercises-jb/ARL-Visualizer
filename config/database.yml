@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: react_rails_production
-  username: react_rails
-  password: <%= ENV['REACT_RAILS_DATABASE_PASSWORD'] %>
+  database: react_rails_development
