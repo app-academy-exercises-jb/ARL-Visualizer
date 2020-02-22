@@ -23,7 +23,7 @@ module Modules::Validator
       end
     }
 
-    attrib_validator(opt_hash)
+    # attrib_validator(opt_hash)
     true
   end
 
@@ -56,14 +56,14 @@ module Modules::Validator
       String
     when 'NUMERIC'
       Numeric
-    when 'INTEGER'
+    when 'INTEGER', 'bigint'
       Integer
     when 'REAL'
       Float
     when 'BLOB'
       rasise "pls implement me for type BLOB"
     else
-      raise "unknown data type"
+      raise "unknown data type: #{type}"
     end
   end
 end

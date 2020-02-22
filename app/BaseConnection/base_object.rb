@@ -13,8 +13,7 @@ class BaseObject
       opt_hash.each { |hash|
         self.class.new(hash)
       }
-    elsif (opt_hash.class == SQLite3::ResultSet::HashWithTypesAndFields ||
-        opt_hash.class == Hash)
+    elsif (opt_hash.class == Hash)
       parsed = self.class.opt_parser(opt_hash)
       self.class.object_validator(parsed)
       parsed.each { |k,v| self.instance_variable_set("@#{k}", v) }

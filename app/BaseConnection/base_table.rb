@@ -8,13 +8,13 @@ class BaseTable
     @columns = []
     
     table_info.each { |hash|
-      name = hash["name"]
+      name = hash["column_name"]
       @params[name.to_sym] = {
         name: name,
-        type: hash["type"],
-        nullable: (hash["notnull"] != 1),
-        dflt_value: hash["dflt_value"],
-        primary: (hash["pk"] == 1)
+        type: hash["data_type"],
+        nullable: (hash["is_nullable"] != "NO"),
+        dflt_value: hash["column_default"],
+        primary: (hash["ordinal_position"] == "1")
       }
       @columns << name.to_sym
       @primary_key << name.to_sym if hash["pk"] == 1

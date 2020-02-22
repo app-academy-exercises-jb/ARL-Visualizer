@@ -3,11 +3,12 @@ module Modules::Searchable
     db = child.db
     table_name = child.table.name
     table_info = child.table.params
+    meths = []
     # in this loop, we create a new accessor and find_by_? for each defined attribute
     table_info.each { |k,v|
       key = k.to_s
       method = ("find_by_" + k.to_s).to_sym
-      
+      meths << method
       # we execute inside our generated class's singleton class in order to make the 'find_by_?' methods class methods. these will be eager loading methods, so they do not return a relation
       child.singleton_class.class_exec(db,key,table_name,method) {
         define_method method do |val|
@@ -18,6 +19,11 @@ module Modules::Searchable
       }
       # define an accessor for every attribute, for instances of the class
       child.class_exec(k) { attr_accessor k }
+    }
+    child.singleton_class.class_exec(meths) { 
+      define_method :query_methods do
+        meths
+      end
     }
   end
   

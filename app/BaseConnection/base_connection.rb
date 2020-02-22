@@ -15,32 +15,50 @@ require_relative 'Modules/searchable'
 module BaseConnection
   class << self
     attr_accessor :loaded
-    def connect(connection)
-      raise "#{connection} not a valid file name" unless File.exist?(connection)
-      # pry
-      
-      @db = _connect(connection)
+    attr_reader :classes
+
+    def connect()
+      # connection = 'app/BaseConnection/questions.db'
+      # raise "#{connection} not a valid file name" unless File.exist?(connection)
+      @loaded = false
+      @db = _connect()
       classes = discover_tables(@db)    
       generate_classes!(@db, classes)
     end
 
     private
-    def _connect(connection)
-      Class.new SQLite3::Database do
+    def _connect()
+      Class.new do
         include Singleton
 
         define_method :initialize do
-          super connection
-          self.type_translation = true
-          self.results_as_hash = true
+          @conn = PG.connect dbname: "react_rails_development"
+        end
+
+        define_method :execute do |input|
+          @conn.exec(input) do |res|
+            results = []
+            res.each do |row|
+              results << row
+            end
+            results
+          end
         end
       end
     end
 
     def discover_tables(db)
       tables = []
-      db.instance.execute("SELECT name FROM sqlite_master").each { |table|
-        tables << table['name']
+      query = <<-SQL
+        SELECT * 
+        FROM pg_catalog.pg_tables 
+        WHERE schemaname != 'pg_catalog' 
+          AND schemaname != 'information_schema'
+          AND tablename != 'schema_migrations'
+          AND tablename != 'ar_internal_metadata'
+      SQL
+      db.instance.execute(query).each { |table|
+        tables << table['tablename']
       }
       tables
     end
@@ -48,10 +66,13 @@ module BaseConnection
     def generate_classes!(db, tables)
       @classes = []
 
-      tables.each { |table_name|
-        next if /^sqlite_/.match?(table_name)
-        
-        table = BaseTable.new(table_name, *db.instance.execute("PRAGMA table_info(#{table_name})"))
+      tables.each { |table_name|        
+        query = "
+          SELECT *
+          FROM information_schema.COLUMNS
+          WHERE TABLE_NAME = '#{table_name}'"
+
+        table = BaseTable.new(table_name, *db.instance.execute(query))
         
         klass = Object.const_set(table_name.classify, Class.new(BaseObject) {
           self.instance_variable_set(:@db, db)
@@ -67,14 +88,12 @@ module BaseConnection
           include Modules::Equalizer
         })
 
-        @classes << klass
+        @classes << table_name.classify
       }
 
       @db = nil
+      @loaded = true
       @classes
     end
   end
 end
-
-BaseConnection.connect('app/BaseConnection/questions.db') if BaseConnection.loaded == false
-BaseConnection.loaded = true
