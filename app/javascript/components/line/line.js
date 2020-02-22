@@ -6,14 +6,21 @@ import { getData } from "../../utils/utils"
 
 
 const Resp = styled.div`
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 `;
 
-const Prompt = styled.input`
+const Prompt = styled.textarea`
   font: inherit;
   font-size: 1em;
+  overflow: hidden;
+  max-width: 100vh;
+  resize: none;
+  width: 90%;
+  height: ${props => props.height}rem;
+  position: relative;
+  top: ${props => (props.height - 1.1) + 0.17}rem;
   &, &:focus {
-    width: fit-content;
     border: none;
     padding: 0;
     outline: none;
@@ -28,16 +35,26 @@ class Line extends React.Component {
     super(props);
     this.state = {
       current: props.current,
-      response: null
+      response: null,
+      height: 1.1
     };
     this.inputRef = React.createRef();
     this.showPrompt = this.showPrompt.bind(this);
     this.keyDownHandler = this.keyDownHandler.bind(this);
     this.getIO = this.getIO.bind(this);
+    this.setHeight = this.setHeight.bind(this);
   }
 
   componentDidMount() {
     this.inputRef.focus();
+  }
+
+  componentDidUpdate() {
+    this.props.scroll();    
+  }
+
+  setHeight(e) {
+    this.setState({ height: Math.ceil(e.target.scrollHeight / e.target.cols) * 1.1 })
   }
 
   keyDownHandler(event) {
@@ -47,7 +64,8 @@ class Line extends React.Component {
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       event.target.value = this.props.history(-1, event.target.value)
-    } else if (event.keyCode === 13) {
+    } else if (event.keyCode === 13 && event.shiftKey === false) {
+      event.preventDefault && event.preventDefault();
       this.input = event.target.value;
       this.setState({current: false});
       this.inputRef = null;
@@ -93,10 +111,12 @@ class Line extends React.Component {
   }
 
   showPrompt() {
-    return (<div>
+    return (<div style={{overflow: "hidden"}}>
       [{this.props.ip}]$ <Prompt 
         ref={(ip) => this.inputRef = ip}
         onKeyDown={this.keyDownHandler}
+        height={this.state.height}
+        onChange={this.setHeight}
       >
       </Prompt>
     </div>)

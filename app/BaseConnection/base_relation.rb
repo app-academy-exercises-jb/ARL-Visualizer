@@ -77,6 +77,11 @@ class BaseRelation
       @values.map! { |val| @klass.new(val) }
   end
 
+  def to_s
+    self.load unless @loaded
+    JSON.pretty_generate @konstructed.map { |k| JSON.parse(k.to_s) }
+  end
+
   def inspect
     case @loaded
     when false

@@ -12,6 +12,7 @@ const Body = styled.div`
   text-align: initial;
   background-color: #2c2c2c;
   color: #c8c8c8;
+  overflow-wrap: anywhere;
 `;
 
 class Terminal extends React.Component {
@@ -19,7 +20,8 @@ class Terminal extends React.Component {
     super(props);
 
     this.inputRef = React.createRef();
-    this.handleClick = this.handleClick.bind(this);
+    this.focusPrompt = this.focusPrompt.bind(this);
+    this.scroll = this.scroll.bind(this);
     this.getLines = this.getLines.bind(this);
     this.switchLine = this.switchLine.bind(this);
     this.clearLines = this.clearLines.bind(this);
@@ -42,6 +44,7 @@ class Terminal extends React.Component {
     return (<Line 
       ref={(ch) => this.prompt = ch}
       current={true} 
+      scroll={this.scroll}
       switchLine={this.switchLine}
       clearLines={this.clearLines}
       history={this.history}
@@ -53,7 +56,7 @@ class Terminal extends React.Component {
 
   componentDidMount() {
     //simulate "help"
-    this.prompt.keyDownHandler({keyCode: 13, target: {value: "help"}})
+    this.prompt.keyDownHandler({keyCode: 13, target: {value: "help"}, shiftKey: false})
   }
 
   history(dir, value) {
@@ -117,12 +120,17 @@ class Terminal extends React.Component {
     });
   }
 
-  handleClick() {
+  focusPrompt() {
     this.prompt.inputRef.focus();
   }
 
+  scroll() {
+    this.prompt 
+      && this.prompt.inputRef
+      && this.prompt.inputRef.scrollIntoView({ behavior: "smooth" })
+  }
+
   getLines() {
-    // debugger
     return (
       <div>
         {this.state.lines.map((l) => { return (
@@ -138,7 +146,7 @@ class Terminal extends React.Component {
 
   render () {
     return (
-      <Body onClick={this.handleClick}>
+      <Body onClick={this.focusPrompt}>
         {this.getLines()}
       </Body>
     );

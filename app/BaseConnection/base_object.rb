@@ -18,8 +18,12 @@ class BaseObject
       self.class.object_validator(parsed)
       parsed.each { |k,v| self.instance_variable_set("@#{k}", v) }
     else
-      raise "fatal: #{opt_hash} is not a SQLite3 hash, a hash, or an array thereof"
+      raise "fatal: #{opt_hash} is not a hash or an array thereof"
     end
+  end
+
+  def to_s
+    self.to_json
   end
 
   def save

@@ -27,7 +27,8 @@ export const Help = async (input) => (await <div>
         <td>joins</td>
       </tr>
     </tbody>
-  </table>
+  </table> <br></br>
+  NB: You can try just a class name to see all the available query methods for it.
   </div>)
 
 export const Clear = async (input) => (
