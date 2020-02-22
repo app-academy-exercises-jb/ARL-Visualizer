@@ -28,7 +28,7 @@ module BaseConnection
 
     private
     def _connect()
-      puts ENV['DATABASE_URL']
+      puts "this is the url: " + ENV['DATABASE_URL']
       Class.new do
         include Singleton
 
