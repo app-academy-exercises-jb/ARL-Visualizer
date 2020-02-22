@@ -45,7 +45,7 @@ module BaseConnection
 
         define_method :initialize do
           puts "this is the url: " + ENV['DATABASE_URL']
-          @conn = PG.connect dbname: ENV['DATABASE_URL']
+          @conn = PG.connect db
         end
 
         define_method :execute do |input|
