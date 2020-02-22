@@ -34,7 +34,7 @@ module BaseConnection
         db = {
           host: "ec2-3-230-106-126.compute-1.amazonaws.com",
           port: 5432,
-          dbname: "react_rails_development",
+          dbname: ENV["DB_NAME"],
           user: ENV["DB_USER"],
           password: ENV["DB_PASS"]
         }
