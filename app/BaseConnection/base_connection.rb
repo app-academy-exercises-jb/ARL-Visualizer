@@ -28,11 +28,11 @@ module BaseConnection
 
     private
     def _connect()
-      puts "this is the url: " + ENV['DATABASE_URL']
       Class.new do
         include Singleton
 
         define_method :initialize do
+          puts "this is the url: " + ENV['DATABASE_URL']
           @conn = PG.connect dbname: ENV['DATABASE_URL']
         end
 
