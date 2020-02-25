@@ -14,7 +14,6 @@ const Prompt = styled.textarea`
   font: inherit;
   font-size: 1em;
   overflow: hidden;
-  max-width: 100vh;
   resize: none;
   width: 90%;
   height: ${props => props.height}rem;
@@ -84,7 +83,9 @@ class Line extends React.Component {
       Commands[req.command](req.input)
         .then(response => {
           if (typeof response === "function") {
-            response.apply(this);
+            const result = response.apply(this);
+            if (result !== undefined) this.setState({ response: result })
+
           } else if (typeof response === "object") {
             this.setState({ response })
           }
@@ -111,7 +112,7 @@ class Line extends React.Component {
   }
 
   showPrompt() {
-    return (<div style={{overflow: "hidden"}}>
+    return (<div style={{overflow: "hidden", maxWidth: "100vw"}}>
       [{this.props.ip}]$ <Prompt 
         ref={(ip) => this.inputRef = ip}
         onKeyDown={this.keyDownHandler}

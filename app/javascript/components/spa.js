@@ -26,6 +26,7 @@ class Terminal extends React.Component {
     this.switchLine = this.switchLine.bind(this);
     this.clearLines = this.clearLines.bind(this);
     this.newLine = this.newLine.bind(this);
+    this.getClasses = this.getClasses.bind(this);
     this.history = this.history.bind(this);
     this.newHistory = this.newHistory.bind(this);
 
@@ -40,6 +41,10 @@ class Terminal extends React.Component {
     };
   }
 
+  getClasses() {
+    return <div>{this.props.classes.join(", ")}</div>
+  }
+
   newLine(key) {
     return (<Line 
       ref={(ch) => this.prompt = ch}
@@ -47,6 +52,7 @@ class Terminal extends React.Component {
       scroll={this.scroll}
       switchLine={this.switchLine}
       clearLines={this.clearLines}
+      getClasses={this.getClasses}
       history={this.history}
       key={key}
       ip={this.props.ip}
@@ -61,7 +67,8 @@ class Terminal extends React.Component {
 
   history(dir, value) {
     let newIdx = this.state.historyIdx + dir,
-      length = this.state.history.length;
+      length = this.state.history.length,
+      oldIdx = newIdx;
 
     //maintain newIdx within the bounds of the history array
     if (newIdx < -1) {
@@ -80,7 +87,9 @@ class Terminal extends React.Component {
       this.setState({currentInput: value});
     }
 
-    if (newIdx === -1) {
+    if (oldIdx === -2) {
+      return value
+    } else if (newIdx === -1) {
       return this.state.currentInput
     } else {
       return this.state.history[newIdx]

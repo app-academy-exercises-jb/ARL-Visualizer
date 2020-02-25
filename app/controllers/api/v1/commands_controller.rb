@@ -6,13 +6,13 @@ class Api::V1::CommandsController < ApplicationController
     input = command_params[:input]
 
     if input == "classes"
-      render json: [BaseConnection.classes.join(", ")]
+      render json: nil#[BaseConnection.classes.join(", ")]
     elsif BaseConnection.classes.any? { |c| c === input }
       klass = Object.const_get(input)
       query_methods = %w(select where limit joins find_by all)
       query_methods.concat(klass.query_methods)
 
-      render json: query_methods
+      render json: {type: "JSON", val: [methods: query_methods]}
     elsif BaseConnection.classes.any? { |c| c === input.split(".")[0] }
       klass = Object.const_get(input.split(".")[0])
       query_methods = %w(select where limit joins find_by all)
@@ -39,8 +39,7 @@ class Api::V1::CommandsController < ApplicationController
           klass.send(m, a):
           klass.send(m)
       end
-
-      render json: klass
+      render json: {type: input.split(".")[0], val: klass}
     else
       render json: SastMan.new(input)
     end

@@ -1,6 +1,6 @@
 import React from 'react'
-import Line from "./line"
 import { getData } from "../../utils/utils"
+import PrettyParser from "../pretty_parser/pretty_parser"
 
 // TODO: interpret `literals` as commands to parse
 export const Echo = async (input) => (await <div>{input.join(" ")}</div>)
@@ -35,13 +35,17 @@ export const Clear = async (input) => (
   await function () { this.props.clearLines() }
 )
 
+export const Classes = async (input) => (
+  await function () { return this.props.getClasses() }
+)
+
 export const Pwd = async (input) => (await <div>{window.origin}</div>)
 
 export const Query = async () => {
   return await function(input) {
     getData({input})
       .then(res => {
-        this.setState({ response: JSON.stringify(res, null, 1) })
+        this.setState({ response: <PrettyParser res={res}/> })
       }).catch(err => {
         this.setState({ response: JSON.stringify(err.toString()) })
       });
